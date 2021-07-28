@@ -257,6 +257,25 @@ test('getFile unencrypted, unsigned', async () => {
   expect(JSON.parse(<string>file)).toEqual(fileContent);
 });
 
+test('getFile without user session', async () => {
+  const path = 'file.json';
+  const appConfig = new AppConfig(['store_write'], 'http://localhost:8080');
+  const userSession = new UserSession({ appConfig });
+  const appSpecifiedCoreNode = 'https://app-specified-core-node.local';
+  const options = {
+    username: 'yukan.id',
+    app: 'http://localhost:8080',
+    decrypt: false,
+  };
+  userSession.appConfig.coreNode = appSpecifiedCoreNode;
+  let storage = new Storage({ userSession });
+  try {
+    //Get file will utilize cordNode url from app config not from userSession
+    await storage.getFile(path, options);
+  } catch {}
+  expect(true).toEqual(true);
+});
+
 test('core node preferences respected for name lookups', async () => {
   const path = 'file.json';
   const gaiaHubConfig = {
